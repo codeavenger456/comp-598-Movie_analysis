@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 PUNCTUATIONS = {'(', ')', '[', ']', ',', '-', '.', '?', '!', ':', ';', '#', '&'}
 VALID = 3
 TOP = 10
+TOPIC_ABR = {'ar': 'Asian Representation', 'ac': 'Actor', 'g': 'General Information', 'r': 'Review', 'ch': 'Character', 'ad': 'Advertisement'}
+SENTIMENT_ABR = {'p': 'Positive', 'ng': 'Negative', 'nu': 'Neutral'}
 
 def main():
     tweets = pd.read_csv("../data/tweets.csv", header=0, sep=",")
@@ -25,13 +27,14 @@ def main():
 
 def plot_topic_sentiment(data):
     sents = list(pd.unique(data["Sentiment"]))
+    sents_labels = [SENTIMENT_ABR[i] for i in sents]
     for i in pd.unique(data["Topic"]):
         sizes = [data[(data["Topic"] == i) & (data["Sentiment"] == j)].shape[0] for j in sents]
         fig1, ax1 = plt.subplots()
-        ax1.pie(sizes, labels=sents, autopct='%1.1f%%')
+        ax1.pie(sizes, labels=sents_labels, autopct='%1.1f%%')
         ax1.axis('equal')
-        ax1.set_title("Sentiment distribution of " + i)
-        plt.savefig("../images/Sentiment_distribution_of_" + i + ".png")
+        ax1.set_title("Sentiment Distribution of " + TOPIC_ABR[i])
+        plt.savefig("../images/Sentiment_distribution_of_" + TOPIC_ABR[i] + ".png")
 
 def plot_word_freq(data):
     for i in data.keys():
@@ -39,9 +42,9 @@ def plot_word_freq(data):
         d = sorted(data[i].items(), key= lambda x: x[1], reverse=True)
         d = d[:10]
         plt.bar([j[0] for j in d], [j[1] for j in d])
-        plt.title("Top 10 distribution of word for " + i)
+        plt.title("Top 10 Word Distribution for " + TOPIC_ABR[i])
         plt.xticks(rotation=20)
-        plt.savefig("../images/Top_10_word_distribution_for_" + i + ".png")
+        plt.savefig("../images/Top_10_word_distribution_for_" + TOPIC_ABR[i] + ".png")
 
 def tf_idf(data, n_words):
     output = dict()
