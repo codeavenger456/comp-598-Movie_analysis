@@ -20,10 +20,22 @@ def main():
     tweets = remove_stop_alpha(stop, tweets)
     freq = build_word_freq_pony(tweets)
     result = tf_idf(freq, TOP)
-    with open("tfidf.json", "w") as f:
+    plot_tf_idf(result)
+    for i in result.keys():
+        result[i] = [j[0] for j in result[i]]
+    with open("tf_idf.json", "w") as f:
         f.write(json.dumps(result, indent=4))
     plot_topic_sentiment(tweets)
     plot_word_freq(freq)
+
+def plot_tf_idf(data):
+    for i in data.keys():
+        fig = plt.figure()
+        plt.bar([j[0] for j in data[i]], [j[1] for j in data[i]])
+        plt.title("TF-IDF for " + TOPIC_ABR[i])
+        plt.xticks(rotation=20)
+        plt.savefig("../images/TF-IDF_for_" + TOPIC_ABR[i] + ".png")
+
 
 def plot_topic_sentiment(data):
     sents = list(pd.unique(data["Sentiment"]))
@@ -54,7 +66,6 @@ def tf_idf(data, n_words):
             output[i].append((j, tf_idf_calc(data, i, j)))
         output[i].sort(key=lambda x: x[1], reverse=True)
         output[i] = output[i][:n_words]
-        output[i] = [j[0] for j in output[i]]
     return output
 
 def tf_idf_calc(data, topic, word):
