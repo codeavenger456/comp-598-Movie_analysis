@@ -18,6 +18,7 @@ def main():
     stop = get_stop_word()
     tweets = clean_column(tweets)
     tweets = remove_stop_alpha(stop, tweets)
+    tweets.drop_duplicates(subset='Tweet', keep='first', inplace=True)
     freq = build_word_freq_pony(tweets)
     result = tf_idf(freq, TOP)
     plot_tf_idf(result)
